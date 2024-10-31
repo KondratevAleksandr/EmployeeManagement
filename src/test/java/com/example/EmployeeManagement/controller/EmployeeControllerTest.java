@@ -2,7 +2,6 @@ package com.example.EmployeeManagement.controller;
 
 import com.example.EmployeeManagement.entity.Employee;
 import com.example.EmployeeManagement.service.EmployeeProjection;
-import com.example.EmployeeManagement.service.EmployeeProjectionImpl;
 import com.example.EmployeeManagement.service.EmployeeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +11,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -50,14 +49,33 @@ public class EmployeeControllerTest {
 
     @Test
     public void shouldReturn_AllEmployees() throws Exception {
-        EmployeeProjection projection = new EmployeeProjectionImpl(new Employee());
-        List<EmployeeProjection> projections = Arrays.asList(projection);
+        EmployeeProjection projection = new EmployeeProjection() {
+            @Override
+            public String getFullName() {
+                return "John Doe";
+            }
+
+            @Override
+            public String getPosition() {
+                return "Developer";
+            }
+
+            @Override
+            public String getDepartmentName() {
+                return "IT";
+            }
+        };
+
+        List<EmployeeProjection> projections = List.of(projection);
 
         when(employeeService.findAllProjections()).thenReturn(projections);
 
         mockMvc.perform(get("/employees"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].fullName").value("John Doe"))
+                .andExpect(jsonPath("$[0].position").value("Developer"))
+                .andExpect(jsonPath("$[0].departmentName").value("IT"));
     }
 
     @Test

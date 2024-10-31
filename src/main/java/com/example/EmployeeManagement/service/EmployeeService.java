@@ -4,7 +4,6 @@ import com.example.EmployeeManagement.entity.Employee;
 import com.example.EmployeeManagement.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -45,11 +44,6 @@ public class EmployeeService {
     }
 
     public List<EmployeeProjection> findAllProjections() {
-        List<Employee> employees = employeeRepository.findAll();
-        List<EmployeeProjection> projections = new ArrayList<>();
-        for (Employee employee : employees) {
-            projections.add(new EmployeeProjectionImpl(employee));
-        }
-        return projections;
+        return employeeRepository.findAllProjections();
     }
 }

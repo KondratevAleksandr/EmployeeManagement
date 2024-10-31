@@ -37,11 +37,7 @@ public class EmployeeController {
     @PutMapping("/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable Integer id, @RequestBody Employee updatedEmployee) {
         Employee employee = employeeService.updateEmployee(id, updatedEmployee);
-        if (employee != null) {
-            return ResponseEntity.ok(employee);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return employee != null ? ResponseEntity.ok(employee) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
